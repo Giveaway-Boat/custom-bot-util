@@ -10,6 +10,7 @@ const func = async () => {
 
     let sql = `insert INTO custom_bots (bot_id, token)\nVALUES `;
     let inviteLinks = '';
+    let success = true;
 
     for (const token of tokens) {
         if (!token) continue;
@@ -18,8 +19,17 @@ const func = async () => {
 
         const { bot_public, flags } = (await superagent.get('https://discord.com/api/oauth2/applications/@me').set('Authorization', `Bot ${token}`)).body;
 
-        if (!bot_public) return console.log(`Bot not public: Invalid intents for: https://discord.com/developers/applications/${botID}/bot`);
-        if (flags !== 557056) return console.log(`Invalid intents for: https://discord.com/developers/applications/${botID}/bot`);
+        if (!bot_public) {
+            success = false;
+
+            console.log(`Bot not public: Invalid intents for: https://discord.com/developers/applications/${botID}/bot`);
+        }
+
+        if (flags !== 557056) {
+            success = false;
+
+            console.log(`Invalid intents for: https://discord.com/developers/applications/${botID}/bot`);
+        }
 
         sql += `('${botID}', '${token}'),\n`;
         inviteLinks += `https://discord.com/api/oauth2/authorize?client_id=${botID}&permissions=0&scope=bot&guild_id=882993059720232990\n`;
@@ -27,8 +37,10 @@ const func = async () => {
 
     sql = sql.slice(0, -2) + ';';
 
-    fs.writeFileSync('./addbots.sql', sql);
-    fs.writeFileSync('./invitelinks', inviteLinks);
+    if (success) {
+        fs.writeFileSync('./addbots.sql', sql);
+        fs.writeFileSync('./invitelinks', inviteLinks);
+    }
 };
 
 func();
