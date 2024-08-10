@@ -31,7 +31,7 @@ const func = async () => {
             console.log(`Invalid intents for: https://discord.com/developers/applications/${botID}/bot`);
         }
 
-        sql += `update custom_bots set token = '${token}', is_token_invalid = null where bot_id = '${botID}';\n`;
+        sql += `update custom_bots set token = '${token.replace(/'/g, "''")}', is_token_invalid = null where bot_id = '${botID.replace(/'/g, "''")}';\n`;
     }
 
     if (success) {

@@ -31,7 +31,7 @@ const func = async () => {
             console.log(`Invalid intents for: https://discord.com/developers/applications/${botID}/bot`);
         }
 
-        sql += `('${botID}', '${bot.discriminator}', '${token}'),\n`;
+        sql += `('${botID.replace(/'/g, "''")}', '${bot.discriminator.replace(/'/g, "''")}', '${token.replace(/'/g, "''")}'),\n`;
         inviteLinks += `https://discord.com/api/oauth2/authorize?client_id=${botID}&permissions=0&scope=bot&guild_id=882993059720232990\n`;
     }
 
