@@ -8,7 +8,7 @@ const func = async () => {
         .split('\n')
         .map((token) => token.replace(/\r|\s/g, ''));
 
-    let sql = `insert INTO custom_bots (bot_id, token)\nVALUES `;
+    let sql = `insert INTO custom_bots (bot_id, discriminator, token)\nVALUES `;
     let inviteLinks = '';
     let success = true;
 
@@ -17,7 +17,7 @@ const func = async () => {
 
         const botID = Buffer.from(token.split('.')[0], 'base64').toString();
 
-        const { bot_public, flags } = (await superagent.get('https://discord.com/api/oauth2/applications/@me').set('Authorization', `Bot ${token}`)).body;
+        const { bot, bot_public, flags } = (await superagent.get('https://discord.com/api/oauth2/applications/@me').set('Authorization', `Bot ${token}`)).body;
 
         if (!bot_public) {
             success = false;
@@ -31,7 +31,7 @@ const func = async () => {
             console.log(`Invalid intents for: https://discord.com/developers/applications/${botID}/bot`);
         }
 
-        sql += `('${botID}', '${token}'),\n`;
+        sql += `('${botID}', '${bot.discriminator}', '${token}'),\n`;
         inviteLinks += `https://discord.com/api/oauth2/authorize?client_id=${botID}&permissions=0&scope=bot&guild_id=882993059720232990\n`;
     }
 
